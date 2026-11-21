@@ -15,7 +15,7 @@
         <button type="button" id="laser-open">Laserdesktop erneut öffnen</button>
         <button type="button" id="laser-stop">Sitzung beenden</button>
       {% else %}
-        <p>Bitte gib hier deinen (Vor-)Namen ein, um zur Lasersoftware zu gelangen. Nach dem du fertig bist, beende deine Sitzung. Der Name sowie Anfangs- und Endzeit werden in einer Datenbank gespeichert. Wir nutzen die Daten lediglich für statistische Zwecke und um im Fehlerfall schneller eine Lösung zu finden.</p>
+        <p>Bitte gib hier deinen (Vor-)Namen ein, um zur Lasersoftware zu gelangen. Nachdem du fertig bist, beende deine Sitzung wieder.</p>
         <input id="laser-name" placeholder="Dein Name" maxlength="80">
         <button type="button" id="laser-start">Laser-Zugang starten</button>
       {% endif %}
@@ -31,6 +31,7 @@
       {% else %}
         <p>Niemand.</p>
       {% endif %}
+      <p><strong>Warum brauchen wir deinen Namen?</strong> <br /> Wir speichern deinen Namen sowie Anfangs- und Endzeit der Session. Dein Name wird hauptsächlich verwendet, um dir einen Dateiordner für den Upload zu erzeugen. Daneben dienen die Daten einer Nutzungsstatistik und einer schnelleren Lösungsfindung im Fehlerfall.</p>
     </section>
 
     <script>
