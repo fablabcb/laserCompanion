@@ -48,7 +48,7 @@
     if (loggedIn) enableWarning();
 
     // Datei-Upload (Formular-Submit) darf keine Warnung auslösen
-    document.querySelectorAll('form').forEach(f => f.addEventListener('submit', disableWarning));
+    document.addEventListener('submit', disableWarning, true);
 
     const startBtn = document.getElementById('laser-start');
     if (startBtn) startBtn.addEventListener('click', async () => {
@@ -102,7 +102,7 @@
       <ul>
         {% for f in files %}
           <li>
-            <a href="{{ url_for('download', filename=f.path) }}">{{ f.path }}</a>
+            <a href="{{ url_for('download', filename=f.path) }}" download>{{ f.path }}</a>
             <small>({{ f.size_kb }} KB)</small>
           </li>
         {% endfor %}
