@@ -24,6 +24,13 @@ body {
     min-width: 0;
 }
 
+.kachel-link { position: relative; }
+.kachel-link a::after {
+    content: "";
+    position: absolute;
+    inset: 0;             /* der Link deckt die ganze Kachel ab */
+}
+
 .intro {
     text-align: center;
 }
