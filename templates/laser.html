@@ -87,9 +87,13 @@
         </ul>
       {% endif %}
     {% endwith %}
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
+    {% if not me %}
+      <p class="warnung"><strong>Hinweis:</strong> Du kannst erst etwas hochladen, wenn du den Laser-Zugang gestartet hast.
+      Die Dateien werden dann in einem Ordner mit deinem Namen abgelegt.</p>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <input type="submit" value="Upload" {% if not me %}disabled{% endif %}>
     </form>
 
     <h2>Verfügbare Dateien zum Download</h2>
@@ -97,7 +101,7 @@
       <ul>
         {% for f in files %}
           <li>
-            <a href="{{ url_for('download', filename=f.name) }}">{{ f.name }}</a>
+            <a href="{{ url_for('download', filename=f.path) }}">{{ f.path }}</a>
             <small>({{ f.size_kb }} KB)</small>
           </li>
         {% endfor %}

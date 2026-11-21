@@ -103,21 +103,27 @@ def end_session(sid):
         )
         db.commit()
 
+# ---------------------------------------- Sicherer Ordnername
+def session_folder(me):
+    # secure_filename macht aus "Jörg Müller" -> "Jorg_Muller" und verhindert ../ und Ähnliches
+    return secure_filename(me['name']) or f"session-{me['id']}"
+
 
 # ---------------------------------------------------------------- Dateien
 def list_files():
-    folder = app.config['UPLOAD_FOLDER']
-    if not os.path.isdir(folder):
+    base = app.config['UPLOAD_FOLDER']
+    if not os.path.isdir(base):
         return []
     files = []
-    for name in os.listdir(folder):
-        path = os.path.join(folder, name)
-        if os.path.isfile(path):
-            files.append({
-                'name': name,
-                'size_kb': round(os.path.getsize(path) / 1024, 1),
-            })
-    return sorted(files, key=lambda f: f['name'].lower())
+    for root, dirs, names in os.walk(base):
+        dirs[:] = [d for d in dirs if not d.startswith('.')]    # versteckte Ordner überspringen
+        for name in names:
+            if name.startswith('.'):
+                continue
+            full = os.path.join(root, name)
+            rel = os.path.relpath(full, base).replace(os.sep, '/')
+            files.append({'path': rel, 'size_kb': round(os.path.getsize(full) / 1024, 1)})
+    return sorted(files, key=lambda f: f['path'].lower())
 
 
 # ---------------------------------------------------------------- Routen
@@ -129,6 +135,12 @@ def guck():
 @app.route('/lasercompanion', methods=['GET', 'POST'])
 def lasercompanion():
     if request.method == 'POST':
+        me = my_session()
+        if not me:
+            flash('Kein aktiver Laser-Zugang: Bitte zuerst oben Namen eingeben und '
+                  '"Laser-Zugang starten", dann hochladen.')
+            return redirect(url_for('lasercompanion'))
+
         if 'file' not in request.files:
             flash('Kein Datei-Teil im Request')
             return redirect(request.url)
@@ -138,10 +150,12 @@ def lasercompanion():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash(f'Datei {filename} erfolgreich im Samba-Share gespeichert')
-            return redirect(url_for('lasercompanion'))      # war: 'upload_file'
+            folder = session_folder(me)
+            target = os.path.join(app.config['UPLOAD_FOLDER'], folder)
+            os.makedirs(target, exist_ok=True)
+            file.save(os.path.join(target, filename))
+            flash(f'Datei {filename} im Ordner {folder} gespeichert')
+            return redirect(url_for('lasercompanion'))
         else:
             flash('Dateityp nicht erlaubt')
             return redirect(request.url)
