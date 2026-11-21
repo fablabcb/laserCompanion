@@ -1,6 +1,74 @@
 <!DOCTYPE html>
-<title>Lasercut-Files Austauschplattform</title>
-<h1>Dateiverwaltung Lasercutting</h1>
+<title>Lasersaur</title>
+<h1>Lasersaur Verwaltung</h1>
+<section class="laser-access">
+  <h2>Laser-Zugang (VNC)</h2>
+  
+  {% if me %}
+    <p>Angemeldet als <strong>{{ me['name'] }}</strong> seit {{ me['login_at'] }}</p>
+    <button type="button" id="laser-open">VNC erneut öffnen</button>
+    <button type="button" id="laser-stop">Sitzung beenden</button>
+  {% else %}
+    <p>Bitte gib hier deinen (Vor-)Namen ein, um zur Lasersoftware zu gelangen. Nach dem du fertig bist, beende deine Sitzung. Der Name sowie Anfangs- und Endzeit werden in einer Datenbank gespeichert. Wir nutzen die Daten lediglich für statistische Zwecke und um im Fehlerfall schneller eine Lösung zu finden.</p>
+    <input id="laser-name" placeholder="Dein Name" maxlength="80">
+    <button type="button" id="laser-start">Laser-Zugang starten</button>
+  {% endif %}
+  <p id="laser-msg"></p>
+
+  <h3>Aktuell angemeldet</h3>
+  {% if active %}
+    <ul>
+      {% for s in active %}
+        <li>{{ s['name'] }} (seit {{ s['login_at'] }})</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Niemand.</p>
+  {% endif %}
+</section>
+
+<script>
+const VNC_URL   = {{ vnc_url|tojson }};
+const START_URL = {{ url_for('laser_start')|tojson }};
+const STOP_URL  = {{ url_for('laser_stop')|tojson }};
+const loggedIn  = {{ 'true' if me else 'false' }};
+const msg = document.getElementById('laser-msg');
+
+function warn(e) { e.preventDefault(); e.returnValue = ''; }
+function enableWarning()  { window.addEventListener('beforeunload', warn); }
+function disableWarning() { window.removeEventListener('beforeunload', warn); }
+
+if (loggedIn) enableWarning();
+
+// Datei-Upload (Formular-Submit) darf keine Warnung auslösen
+document.querySelectorAll('form').forEach(f => f.addEventListener('submit', disableWarning));
+
+const startBtn = document.getElementById('laser-start');
+if (startBtn) startBtn.addEventListener('click', async () => {
+  const name = document.getElementById('laser-name').value.trim();
+  if (!name) { msg.textContent = 'Bitte Namen eingeben'; return; }
+  // Tab synchron im Klick öffnen, sonst blockiert der Browser das Popup
+  const tab = window.open(VNC_URL, '_blank');
+  const r = await fetch(START_URL, { method: 'POST', body: new URLSearchParams({ name }) });
+  if (!r.ok) {
+    if (tab) tab.close();
+    msg.textContent = 'Anmeldung fehlgeschlagen';
+    return;
+  }
+  disableWarning();
+  location.reload();
+});
+
+const openBtn = document.getElementById('laser-open');
+if (openBtn) openBtn.addEventListener('click', () => window.open(VNC_URL, '_blank'));
+
+const stopBtn = document.getElementById('laser-stop');
+if (stopBtn) stopBtn.addEventListener('click', async () => {
+  await fetch(STOP_URL, { method: 'POST' });
+  disableWarning();
+  location.reload();
+});
+</script>
 <h2>Datei in Lasercut-Samba-Share hochladen</h2>
 {% with messages = get_flashed_messages() %}
   {% if messages %}

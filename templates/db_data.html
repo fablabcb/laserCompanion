@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Laser-Protokoll</title>
+  <style>
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #999; padding: 4px 10px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h2>Laser-Sitzungen der letzten 30 Tage ({{ rows|length }})</h2>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Login</th><th>Logout</th><th>Dauer</th><th>Auto-Logout</th></tr>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.login_at }}</td>
+        <td>{{ r.logout_at or 'aktiv' }}</td>
+        <td>{{ r.dauer }}</td>
+        <td>{{ 'ja' if r.auto_logout else '' }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
