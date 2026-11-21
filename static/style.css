@@ -31,6 +31,20 @@ body {
     inset: 0;             /* der Link deckt die ganze Kachel ab */
 }
 
+.kachel-link h2 a {
+    color: inherit;            /* gleiche Farbe wie der übrige Text */
+    text-decoration: none;     /* keine Unterstreichung */
+}
+
+.kachel-link:hover {
+    background: #c8d0cc;       /* etwas dunkler als #d6ddd9 */
+}
+
+.kachel-link .doku a {
+    position: relative;   /* liegt dadurch über der Klickfläche */
+    z-index: 1;
+}
+
 .intro {
     text-align: center;
 }

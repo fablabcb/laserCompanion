@@ -6,13 +6,11 @@
                 <p class="intro">Dies ist der Fablab Server, der euch nützliche Anwendungen anbietet.</p>
 
                 <div class="kacheln">
-                        <article class="kachel"><h2>Lasern</h2>
-                        <ul>
-                                <li>Lasercutter -  Es stehen meerk40t und rayforge zur Lasersteuerung zur Verfügung. Nach Klick auf den Link 
-                                das entsprechende Icon unten Links im Desktop öffnen. <a href="http://192.168.1.3:6082/vnc.html">Lasercutter</a> </li>
-                                <li><a href="{{url_for('lasercompanion')}}">Laserdateien hoch-/runterladen</a></li>
-                        </ul>
+                        <article class="kachel kachel-link">
+                                <h2><a href="{{ url_for('lasercompanion') }}">Lasern</a></h2>
+                                <p class="doku">Hier kannst du eine Laser-Session starten und deine Laserdateien hoch-/runterladen. Zum Lasern stehen aktuell <a href="https://github.com/meerk40t/meerk40t/wiki/Beginners:-5.-Understanding-the-User-Interface">meerk40t</a> und <a href="https://rayforge.org/de/docs/getting-started/installation">rayforge</a> (es kann jeweils nur eines der Programme auf den Laser zugreifen) bereit. </p>
                         </article>
-                        <article class="kachel"><h2>Meshtastic</h2></article>
+                        <article class="kachel"><h2>Meshtastic</h2>
+                        <p>Noch keine Infos vorhanden</p></article>
                 </div>
 {% endblock %}
